@@ -155,15 +155,18 @@ jobs:
           paths:
             - "*-x86_64-apple-darwin.tar.gz"
 
-  build-x86_64-unknown-linux-gnu-archive-and-deb-package:
+  build-x86_64-unknown-linux-musl-archive-and-deb-package:
     docker:
-      - image: timberiodev/vector-builder-x86_64-unknown-linux-gnu:latest
+      - image: timberiodev/vector-builder-x86_64-unknown-linux-musl:latest
     resource_class: xlarge
     steps:
       - checkout
       - run:
           name: Build archive
-          command: make build-archive
+          command: |
+            export RUST_LTO="lto"
+            export TARGET="x86_64-unknown-linux-musl"
+            make build-archive
       # We _must_ build the deb package on the same machine that created
       # the binary. `cargo deb` performs dependency calculation via `ldd`
       # and this process must happen on the same machine it was built in
